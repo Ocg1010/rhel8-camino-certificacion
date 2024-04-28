@@ -1,0 +1,70 @@
+CRONTAB
+MUESTRA LA SINTAXIS
+cat /etc/crontab
+MUESTRA LAS TAREAS
+crontab -l
+
+CONFIGURAR TAREAS
+INTERVALOS DE HORAS (A LA HORA 5 A LA 8 Y DE 8 A 10)
+5,8-10
+INTERVALOS DE 5 MIN
+*/5
+CADA 10 MIN 
+*/10
+CREANDO UNA TAREA
+echo "* * * * * /usr/sbin/ip a >> /home/ocantoran/ip_settings" > cron_file
+crontab cron_file
+crontab -l
+
+crontab -e
+VISUALIZAR UN CAT EN LA PANTALLA DE VIM
+:r!cat /etc/crontab
+ESTA TAREA ES CADA DOS MINUTOS HASTA LAS 9 (POR ESO NO SE CUENTA LA HORA 21) TODOS LOS MESES TODOS LOS DIAS DEL MES SOLO DE LUENS A VIERNES 
+*/2  8-20 * * mon-fri /usr/bin/date >> /home/ocantoran/cron_date.txt
+:rwhich /usr/bin/date
+crontab -l
+
+journalctl -f -u crond
+
+
+ENTRADAS DE CRON DE SISTEMA
+cd /etc/cron.d
+cat /etc/cron.d/0hourly
+*/1  8-20 * * mon-fri root /usr/bin/date >> /home/ocantoran/cron_date.txt" > fidel_cron
+systemctl restart crond
+
+GESTION ARCHIVOS TEMPORALES
+ls /run/tmpfiles.d
+ls /etc/tmpfiles.d
+cat /usr/lib/tmpfiiles.d/tmp.conf
+
+
+UNIDAD DE SITEMA
+systemd.tmpfiles-clean.timer
+systemctl cat systemd.tmpfiles-clean.timer
+
+
+
+man 5 tmpfiles.d
+vim /etc/tmpfiles.d/user.conf
+d /run/systemd/seats 0755 root root -
+systemd-tmpfiles --create
+ls -ld /run/systemd/seats
+
+D /home/ocantoran/Desktop/testing 0700 ocantoran ocantoran 1m
+
+
+
+LIMPIAR DIRECTORIO QUE NO SE HAYAN MOVIDO EN 5 DIAS
+cp /usr/lib/tmfiles.d/tmp.conf /etc/tmpfiles.d
+vim /etc/tmpfiles.d/tmp.conf
+
+systtemd-tmpfiles --clean /etc/tmpfiles.d/tmp.conf
+
+CREAR DIRECTORIO EL CUAL LOS ARCHIVOS QUE NO SE TOQUEN POR 30 SEG SE ELIMINAN
+vim /etc/tmpfiles.d/momentaneos.conf
+d /run/momentaneos 0700 root root 30s
+ls -ld /etc/tmpfiles.d/momentaneos.conf
+systemd-tmpfiles --create /etc/tmpfiles.d/momentaneos.conf
+touch /run/momentaneos/file1 ; sleep 30
+

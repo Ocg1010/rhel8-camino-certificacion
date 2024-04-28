@@ -1,0 +1,100 @@
+SEÑALES PARA PROCESOS EN REDHAT
+TERM - TERMINA EL PROCESO
+CORE - GUARDA UNA IMAGEN EN MEMORIA
+STOP - DEJA DE EJECUTAR Y QUEDA A ESPERA A REAUNADAR
+
+RENUDAR PROCESOS
+# fg
+MATAR PROCESOS
+CONTROL + C 
+VOLCAR UN PROCESO 
+CONTROL + \
+ENUMERAR SEÑALES
+# kill -l
+
+COMANDO PS
+# ps aux 
+# ps -eff
+# ps -aux | grep ocantoran
+
+EL COMANDO KILL POR DEFECTO MANDA LA SEÑAL 15 (SIGTERM)
+kill 2651
+kill -SIGTERM 2678
+
+PKILL SE UTILIZA PARA ENVIAR UNA SEÑAL A UNO O MAS PROCESOS QUE COINCIDAN CON LOS CRITERIOS DE SELECCION
+# pkill --help
+# pkill tail (mata todos los procesos tail)
+# pkill -U ocantoran (mata todo lo que tenga que ver con el usuario ocantoran)
+
+
+2.- DESCONECTANDO USUARIOS
+# w
+IDENTIFICAR EL PID
+# pgrep -l -u ocantoran
+# w -h -u ocantoran
+# pkill -t pts/2
+# pkill -SIGKILL -t pts/2
+
+MANDAR UNA SEÑAL A UN ¨JOB¨ AL JOB NUMERO 1 
+# kill -SIGSTOP %1
+QUE CONTINUE EL PROCESO
+# kill -SIGCONT %1
+
+3.-PROCESO DE MONITOREO
+# uptime (muestra la carga tambien 1min 5min 15min)
+
+EL VALOR DE 1MIN LO DIVIDIMOS ENTRE LOS CPUS QUE TENGAMOS (lscpu) Y TENDREMOS LA CARGA DE 1 5 Y 15 MIN
+top zxc
+
+3.- TUNED PERFILES
+PERFIL DE RENDIMIENTO Y PERFIL DE AHORRO DE ENERGIA
+
+PERFIL RENDIMIENTO:
+BAJA LATENCIA PARA ALMACENAMIENTO RED
+ALTO RENDIEMIENTO PARA ALAMCENAMIENTO Y RED
+RENDIMIENTO DE LA MAQUINA VIRTUAL
+RENDIMIENTO DEL HOST DE VIRTUALIZACION
+
+BALANCED: Ideal para sistemas que requieren un compromiso entre ahorro de enertgia y rendiemiento
+
+DESKTOP: Derivado del perfil equilbrado. proporciona uaj respuesta mas rapida de las aplicaciones interactivas
+
+THROUGHPUT-PERFORMANCE: Sintoniza (tune) el sistema para un rendimiento maximo
+
+LATENCY-PERFORMANCE: Ideal para sistemas de servidopr que requieren baja latencia a expensas del consumo de energia
+ 
+ NETWORK-LATENCY: Derivado del perfil de latencia-rendimiento. Permite parametros de sintonizacion de la red adiociomnales para proporcionar uina latendia de red baja
+
+ POWERSAVE: Sintoniza el sistema para el maximo ahorro de energia
+
+ORACLE: Optimizado para lascargas de base de datos de Oracle basadas en el perfil de rendimiento  virtual-guest Sintoniza el sistema para obtener el maximo rednimiento si se ejecuta en una maquina virtual
+
+VIRTUAL-GUEST:  Sintoniza el sistema para obtener el maximo rendiemiento si se ejecuta en una mquina virtual
+
+VIRTUAL-HOST: Sintoniza el sistema para obtener el maximo rendimiento si actua como un host para maquinas virtuales 
+
+CAMBIAR PERFIL
+# tuned-adm profile PERFIL
+# tuned-adm active
+# tuned-adm profile_info 
+# tuned-adm recommend 
+
+DESACTIVAR LA ACTIVIDAD TUNED
+# tuned-adm off
+ACTIVAR TUNED
+tuned-amd profile PERFIL
+
+
+PRIORIDAD DE PROCESOS
+VERIFICAR NICE  
+ps axo pid,comm,nice,cls --sort=-nice
+ps -o pid,comm,nice 2952
+
+LANZAR COMANDO COON UN VALOR NICE ESPECIFICO
+# nice -n 15 sha1sum /dev/zero & 
+
+AJUSTAR PID A UN VALOR MAYOR DE PROCESO
+# renice -n -19 2052
+
+VALIDAR EL VALOR NICE
+ps -o pid.pcpu,nice,comm $(pgrep sha1sum)

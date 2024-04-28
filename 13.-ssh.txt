@@ -1,0 +1,15 @@
+INICIAR SSH-AGENT
+ps aux | grep ssh-agent
+eval $(ssh-agent)
+
+CONECTARSE UTILIZANDO UNA LLAVE ESPECIFIVA
+# ssh -i .ssh/new_pass rhel8cliente2
+# ssh-copy-id -i .ssh/new_pass.pub rhel8cliente2
+
+
+AGREGA LLAVES PARA AUTENTICACION
+ssh-add .ssh/new_pass
+PARA VER SI HAY LLAVES CARGADAS
+ssh-add -l
+ELIMINAR LLAVES
+ssh-add -D

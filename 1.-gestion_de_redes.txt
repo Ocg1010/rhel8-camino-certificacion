@@ -1,0 +1,90 @@
+
+1.- Validar configuración de red
+
+# Nos da las interfaces con su descripcion (Son los mismo)
+ip a  y ip addr show 
+
+# Validar una configuración de red del device enp1s0
+ip addr show enp1s0 
+
+# Muestra las estadisticas de esta red
+ip -s link show enp1s0 
+
+
+2.- Comprobando la conectividad
+
+# Verificar conexiones
+ping -c5 localhost
+ping -c5 10.0.0.90
+
+# Verificar conexiones con ipv6
+ping6 c-5
+
+# Conectar a un servidor mediante ssh con la ipv6 (debes especificar la interfaz)
+ssh 2806:2f0:90c0:f4bd:42dc:ffb3:3524:1fe1%enp1s0
+
+#  Nombres conocidos de puertos estandar
+/etc/services
+
+# Mostrar estadisticas de socket, puerto y protocolo
+ss
+ss -u -t
+ss --help
+ss -ta
+netstat -ta 
+
+# Nos dice quien es nuestro default rout a traves de que interfaz, que red y el source 
+ip route
+
+# Verificar saltos en sistema local y sistema remoto que no pertenezca a la red
+tracepath google.com
+tracepath rhel8cliente2.labrhel.com
+
+# Estado de los dispositivos 
+nmcli device status
+nmcli connection show 
+
+# Agregar una nueva conexion de red
+nmcli connection add con-name secundaria type ethernet ifname enp7s0
+nmcli connection disconnect enp7s0
+nmcli connection delete secundaria 
+nmcli connection add con-name secundaria type ethernet ifname enp7s0 ipv4.method manual ipv4.addresses 10.0.0.60 ipv4.gateway 10.0.0.1 ipv4.dns 8.8.8.8 
+nmcli connection modify secundaria conection.autoconnect yes
+nmcli connection reload
+
+# Configuración manual de red en los archivos (ejemplo)
+TYPE=Ethernet
+#Persistente a reinicios
+ONBOOT=yes
+#Direccion manual
+BOOTPROTO=none
+#Dispositivo 
+DEVICE=enp7s0
+NAME=enp7s0
+IPADDR1=10.0.0.82
+PREFIX=24
+GATEWAY=10.0.0.1
+DNS1=8.8.8.8
+
+
+
+3.- Configuiracion de nombres de host y resolucion de nombres
+hostname
+vim /etc/hostname
+hostnamectl status
+hostnamectl set-hostname NAME
+
+# Archivo donde el servidor pasa primero para buscar la resolucion de nombres
+/etc/nsswitch.conf
+# 1.- /etc/host
+# 2.- /etc/resolv.conf
+Solo aguanta 3 dns server en el archivos
+niguno de esos dos archivos se configura manualmente siempre con el comando nmcli y hostnamectl set-hostname
+
+(Encuentra los nombres cortos de hossts)
+getent hosts NAMEHOST
+
+hostname -s 
+hostname -f
+
+

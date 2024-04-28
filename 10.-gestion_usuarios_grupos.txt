@@ -1,0 +1,86 @@
+1.- OBTENER INFORMACION DE UN USUARIO 
+# id
+# getent group fidel
+# getent passwd fidel
+# grep fidel /etc/passwd
+
+2.- REMOVER USUARIO DE GRUPO 
+gpasswd -d test wheel
+
+3.- CREAR USUARIO
+# useradd
+# useradd user3 -c "comentario"
+# useradd user4 -u 2121 
+RUTA PARA PARAMETROS DE NUEVOS USUARIOS
+# cat /etc/login.defs
+
+4.- MODIFICAR UN USUARIO
+# usermod -c "Esto es un comentario" user
+# usermod -s /sbin/nologin user4
+
+
+5.- ELIMINAR USUARIO JUNTO CON SU HOME
+# userdel -r user5
+
+
+6.- CREAR GRUPOS
+# groupadd ABC
+CREAR GURPO CON UN GROUPID DIFERENTE
+# groupadd -g 2155 ABCD
+CREAR GRUPO DE SISTEMA
+# groupadd -r NUEVO
+CREAR USUARIO CON UN GRUPO SUPLEMENTARIO
+# useradd admin1 -G admins
+
+
+7.- MODIFICAR UN GRUPO
+MODIFICAR EL NOMBRE
+# groupmod -n NEWNAME NAME
+CAMBIAR GROUP ID
+# groupmod -g 2323 GROUP
+
+
+8.- ELIMINAR GRUPO
+# groupdel GROUP
+ELIMINAR USUARIO DE UN GRUPO
+gpasswd -d ocantoran grupoprueba
+
+
+9.- CAMBIAR GRUPO PRIMARIO DE USUARIO
+# usermod -g GROUP USER
+AGREGAR GRUPO COMPLEMENTARIO A USUARIO
+# usermod -aG NEWGROUP USER
+
+10.- VER LOS USUARIOS QUE PERTENECEN A UN GRUPO
+# getent group admins
+# getent group developers
+
+LISTAR LOS USUARIOS QUE PERTENECEN AL GRUPO ADMINS
+# groupmems -lg admins
+
+PASAR CONTRASEÑA A VARIOS USUARIOS A LA VEZ
+for pass in user1 user2 user3 user4; do
+echo "password" | passwd $pass --stdin;
+done
+
+COMANDO CHAGE
+chage -l
+min days -m (Cantidad minima de dias que deben pasar para poder cambiar la contraseña)
+max days -M (Maximo de dias que durara la contraseña)
+wanr days -W (Avisa esos dias antes que expire la contraseña)
+inactive days -i (Va a seguira ceptando la contraseña aun cuando ya haya expirado)
+
+# chage -m 2 -M 90 -W 6 -I 4 ocantoran
+
+LA CONTRASEÑA EXPIRA EN ESTA FECHA (QUE ES DIFERENTE A CUANDO EXPIRA LA CUENTA)
+# usermod -e 2024-12-22 ocantoran
+CALCULAR LA FECHA
+# date -d "+90 days" 
+# date -d "90 days" +"%Y-%m-%d"
+# date -d "90 days" +%F
+
+RESTRICCION DE ACCESO
+OBLIGAR A CAMBIAR LA CONTRASEÑA CUANDO INICIEN SESION
+# chage -d 0 ocantoran
+ESTABLECER LA FECHA DE VENCIMIENTO DE LA CUENTA 
+# chage -E 2024-12-15 ocantoran

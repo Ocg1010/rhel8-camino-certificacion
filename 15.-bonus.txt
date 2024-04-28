@@ -1,0 +1,6 @@
+ACL
+LISTAR ACL
+getfacl /data/contablidad
+AGREGAR UNA ACCESLIST
+setfacl -Rm g:servicios:rwX /data/contabilidad
+setfacl -m d:g:servicios:rwx /data/contabilidad
