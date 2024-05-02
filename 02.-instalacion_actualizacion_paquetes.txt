@@ -1,0 +1,137 @@
+############################### REGISTRO DE SISTEMAS PARA SOPOPRTE REDHAT  ##############################################################
+
+# MOSTRAR AYUDA DEL COMANDO
+subscription manager --help
+
+# COMADNO INTERACTIVO PARA SUSCRIBIR EL SISTEMA 
+subscription manager register
+
+# MUESTRA INFORMACIÓN SOBRE LAS SUSCRIPCIONES DE SOFWARE QUE ESTÁN ASOCIADAS CON EL SISTEMA OPERATIVO 
+subscription manager list
+
+# SUSCRIPCIONES DISPONIBLES
+subscription manager list --available
+
+# ADJUNTA UNA SUSCRIPCIÓN ESPECIFICA AL SISTEMA
+subscription manager attach --pool=4356345673563456
+
+# MUESTRA TODOS LOS REPOSITORIOS QUE TENEMOS
+subscription-manager repos --list
+
+# MUESTRA LOS REPOSTORIOS QUE TENEMOS
+subscription-manager repos --list-enabled y subscription-manager repos --list-disabled
+
+# HABILITAR UN REPOSITORIO
+subscription-manager repos enable=rhel-8-for-x86_64-appsteam-source-rpms
+
+# LISTA DETALLADA DE LAS SUSCRIPCIONES DE SOFWARE QUE ESTAN ACTUALMENTE CONSUMIDAS POR EL SISTEMA 
+subscription-manager list --consumed
+
+# DESUSCRIBIR EL EQUIPO
+subscription-manager unregister
+
+2.- INSTALACIÓN Y ACTUALIZACIÓN DE PAQUETES SE SOFWARE  
+yum --help
+
+# MUESTRA EL PAQUETE SOLICITADO O SI HAY ACTUALIZACIONES DISPONIBLES 
+yum list PACKAGE
+
+# BUSCA PAQUETES SIMILARES A LO BUSCADO 
+yum search PACKAGE
+yum search all PACKAGE
+yum search all 'web server'
+
+# Muestra informacion del paquete
+yum info PACKAGE 
+
+# Nos muestra que paquete provee el comando 'ss' 'netstat'
+ yum provides ss
+ yum provides netstat 
+
+# Que paquete prove un comando especifico 
+yum whatprovides netstat
+yum whatprovides */netstat
+
+3.- Instalando y eliminando grupos de software
+# Muestra los grupos  y los ocultos ocultos
+yum group list 
+yum group listhidden
+
+# Muestra informacion del grupo
+yum group info 'GROUP'
+
+# Analizar historial de las transacciones
+yum history
+
+# Muestra informacion de la transaccion que elijas
+yum history info NUM
+
+# Revertir una transaccion completa
+yum history undo NUM
+
+ 
+4.- Creando y habilitando repositorios de software 
+# /etc/yum.repos.d/repositorio.repos
+[base1]
+name = nombre aqui
+baseurl=http://rhel9master.lab.rhel.com/repos/rhel8/basweos
+enabled=1
+gpgchek=1
+gpgkey=file:///etc/pki/rpm-gpg/NAME
+
+# Checar los repositorios disponibles
+yum repolist
+
+# Para agregar con un paquete (debemos tener la url del repositorio)
+yum intall dnf-utils
+yum-config-manager --add-repo=http://rhel9master.lab.rhel.com/repos/rhel8/basweos
+yum-config-manager --enable base
+
+# Este comando utiliza el programa rsync para sincronizar los contenidos de un repositorio de paquetes RPM con la ruta /var/www/html/repos/ en tu sistema local. Aquí está desglosado:
+rsync --repoid=rhel-8-for-x86-baseos-rpms -p /var/www/html/repos/ --downloadcomps --download-metadata
+
+# Ahi dice qie se mantienen 3 versiones del kernel y cuando supera ese numero remueve la mas antigua
+/etc/yum.conf
+
+# Importar una llave
+rpm -- import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7Server
+
+# Buscar si se importo bien
+ls -las /etc/pki/rpm-gpg/RPM-GPG-KEY
+rpm -qa gpg-pubkey*
+rpm -qi NAMEKEY
+
+5.-  Gestionar modulos y habilitar flujos de modulos
+# Listar modulos
+yum module list
+
+# Listar flujos de modulos
+yum module list MODULE
+
+# Remover un modulo (elimina paquetes y dependencias)
+yum module remove php
+
+# Deshabilitar modulos
+yum module disable php
+
+# Habilitar modulos
+yum module enable php
+
+6.- Modulo de conmutacion de flujos
+# Instalar modulo con version diferente
+Supongamos que tenemos instalado instalamos un modulo de paquete version 10
+yum module install potsgresql
+yum module info potsgresql
+# Eliminamos el existente 
+yum module remove potsgresql
+# Deshabilitar
+yum module disable potsgresql
+# Instalar la version que queremos (en este caso 9.6)
+yum module install potsgresql:9.6
+# Listar solo modulos instalados
+yum module list --install
+# Habilitar modulo con su perfil
+yum module enable python36:3.6/common
+yum module install python36:3.6/common
+(PROBAR CON IDM PACKAGE)
+

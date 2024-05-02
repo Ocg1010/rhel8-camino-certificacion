@@ -1,0 +1,231 @@
+1.- CREANDO UN VOLUMEN LOGICO
+# parted /dev/vdb mklabel msdos
+# parted /dev/vdb mkpart primary 1MB 500MB
+# parted /dev/vdb set 1 lvm on
+# parted /dev/vdb print
+
+CON FDISK /dev/vdb 
+n
+83 Linux-LVM
+
+CONVERTIR EN VOLUMEN FISICO
+# pvcreate /dev/vdb1 /dev/vdb2 
+Comando de Verificacion
+pvs, pvdisplay
+
+CREAR VOLUMEN DE GRUPO
+# vgcreate vg9 /dev/vdb1 /dev/vdb2
+VALIDAR LA CREACION
+# vgs, vgdisplay vg9
+
+CALCULADORA BC`
+# echo "242*4" |  bc
+
+CREAR UN VOLUMEN LOGICO
+# lvcreate vg9 -n lv_01 -L 250M -t
+# lvcreate vg9 -n lv_02 -l 62 (62*4) 
+VERIFICAR LA CREACION
+# lvs lvdisplay
+
+VERIFICAR QUE NO TIENEN UN SISTEMA DE ARCHIVOS
+# lsblk -fp
+DARLES FORMATO A LOS VOLUMENES LOGICOS
+# mkfs.xfs /dev/vg9/lv_01 
+# mkfs -t xfs /dev/vg9/lv_02
+
+CREAR UN DIRECTORIO PARA MONTARLOS
+# mkdir /mnt/lv{01,02}
+
+Montarlos 
+# /etc/fstab
+# mount -a 
+
+Desmontarlos 
+# umount /mnt/lv01 /mnt/lv02
+Eliminarlos de fstab
+# /etc/fstab
+
+Eliminar un volumen logico
+# lvremove /dev/vg9/lv01
+# lvremove /dev/vg9/lv02
+
+
+Eliminar volumen de gurpo
+# vgremove vg7 vg9
+
+
+Eliminar physical volume
+pvremove /dev/vdb1 /dev/vdb2
+
+
+Crear disco con una tabla GPT PARTED
+parted -s /dev/vdb mklabel gtp
+parted /dev/vdb mkpart primary xfs 1MiB 250MiB
+parted /dev/vdb set 1 lvm on
+
+Crear disco con una tabla GPT FDISK
+gdisk /dev/vdbc 8e00
+udevadm settle
+partprobe -s
+
+Etiquetar como physical volume
+# pvcreate /dev/vdb1 
+
+Crear volumen de grupo
+# vgcreate -s 8m vg_data /dev/vdb1
+# vgdisplay
+
+Crear un volumen logico
+# lvcreate vg_data -n lv_data1 -l 10
+
+
+Etiquetar file system
+# mkfs.xfs /dev/vg_data/lv_data1
+
+2.- REDUCIR Y EXTENDER VOLUMEN LOGICO
+Etiquetar nuevo disco
+pvcreate /dev/vdb3
+vgextend vg_data /dev/vdb3
+
+
+Remover physical volumen
+# pvmove /dev/vdb3
+
+
+Reducir volumen de grupo
+# vgreduce vg_data /dev/vdb3
+
+Extender un grupo 
+# vgextend rhel_rhel8cliente2 /dev/vdb1
+
+Extender volumen logico (-r para rezice -t para test)
+# lvextend /dev/vg_data/lv_data1 -L +80M -r -t
+# lvextend /dev/vg_data/lv_data1 -L +50%FREE -r -t
+
+
+Extender file sistem
+# xfs_growfs /
+
+3.- EXTENDER VOLUMEN LOGICO SIN LA OPCION -R FORMARTO EXT
+# resize2fs /dev/vg_data/lv_ext4
+
+
+4.- EXTENDER UN VOLUMEN LOGICO SWAP
+# vgextend rhel_rhel8cliente2 /dev/vdb5
+# swapoff -v /dev/rhel_rhel8cliente2/swap
+# lvextend /dev/rhel_rhel8cliente2/swap -l +100%FREE -t
+# mkswap /dev/rhel_rhel8cliente2/swap
+# swapon -av /dev/rhel_rhel8cliente2/swap
+
+
+5.- STRATIS POOL
+Instalar herramientas necesarias para esto 
+# yum provides stratis
+# yum install stratis-cli stratisd
+# systemctl status stratisd
+
+CREAR UN GRUPO DE UNO O MAS DISPOSITIVOS DE BLOQUE PARA FORMAR UN POOL
+# stratis --help
+# stratis pool create lab_pool1 /dev/vdb /dev/vdc (los discos son los blockdevs)
+# stratis pool list
+# stratis pool 
+
+AGREGAR OTRO DISCO
+# stratis pool add-data lab_pool1  /dev/vdbd
+DESTRUIR
+# stratis pool destro lab_pool1
+
+CREAR FILESYSTEM 
+stratis filesystem create lab_pool1 file_system1
+
+CREAR UNA INSTANTANEA
+stratis filesystem snapshot lab_pool1 file_system1 snap1_file_system1
+stratis filesystem list
+
+PROCESO DE MONTAJE 
+lsblk --output=UUID /stratis/lab_pool1/file_system1
+echo "UUID="fdfsfdfd" /dir_stratis xfs defaults,x-systemd.requires=stratisd.service" >> /etc/fstab 
+systemctl daemond-reload
+mdkir /dir_stratis
+mount -a 
+df -hT /dir_stratis
+
+
+6.- ALMACENAMIENTO EN CAPAS
+Listar lo que tenemos dentro del pool
+# stratis blockdev list
+
+PROBAR SISTEMA DE ARCHIVOS
+# echo "hola mundo" >> /dir_stratis/archivo1.txt
+# cat /dir_stratis/archivo1.txt
+
+VERIFICAR STRATIS
+# stratis filesystem list
+
+
+CREAR UN ARCHIVO DE 2G
+# dd if=/dev/urandom of=/dir_stratis/archivo2.txt bs=1M count=2048
+
+CHECAR EL CRECIMIENTO DINAMICO DEL POOL STRATIS
+# stratis filesystem list
+
+
+REMOVER ARCHIVO PARA TRABAJAR CON LAS INSTANTANEAS
+# rm /dir_stratis/archivo1.txt
+
+HACEMOS UN DIRECTORIO PARA MONTAR EL SNAP DE STRATIS
+# mkdir /snap_stratis
+# mount /stratis/lab_pool1/snap2_file_system1 /snap_stratis
+# df -hT 
+
+
+DESMONTAMOS LA INSTANTANEA
+# umount /snap_stratis
+
+ELIMINAR EL SISTEMA DE ARCHIVOS
+# stratis filesystem destroy lab_pool1 snap1_file_system1
+
+
+7.- COMPRESION DE ALMACENAMIENTO CON VIRTUAL DATA OPTIMIZED (VDO)
+Instalar los paquetes necesarios y el modulo en el sistema
+# yum install vdo kmod-kvdo
+
+Crear un VDO
+# vdo create -n vdo01 --device /dev/vdd --vdoLogicalSize 20G
+
+Analizar el volumen VDO
+# vdo status
+# vdo status --n vdo1
+
+Lista de volumenes VDO que se iniciaron actualmente
+# vdo list 
+# vdo list -a
+
+Detener el volumen VDO
+# vdo stop -n vdo01
+
+Iniciar un volumen 
+# vdo start -n vdo01
+
+7.- COMPRESION Y DESDUPLICACION DE ALMACENAMIENTO CON VDO
+Crear un sistema de archivos
+Veriricar disponibilidad del volumen
+# vdo list
+Aplicar un sistema de archivos
+mkfs.xfs -K /dev/mapper/vdo01
+udevadm settle
+lsblk -fp
+mkdir /dir_vdo
+echo "UUID=dffsdfdsfdsf /dir_vdo xfs default,x-systemd.requires=vdo.service 0 0" >> /etc/fstab
+mount -a o mount /dir_vdo
+
+VER ESTADISTICAS
+# vdostats -h
+
+
+COMRPESION Y DESDUPLICACION
+# vdo status | grep -i compression
+# vdo status | grep -i dedupli
+
+
+

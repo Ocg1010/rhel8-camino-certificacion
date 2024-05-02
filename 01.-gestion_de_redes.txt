@@ -1,0 +1,90 @@
+########## VALIDAR LA CONFIGURACIÓN DE RED ###########################
+
+# MUESTRA LAS INTERFACES CON SU DESCRIPCIÓN (AMBOS COMANDOS ARROJAN LO MISMO)
+ip a  
+ip addr show 
+
+# VALIDAR UNA CONFIGURACIÓN DE RED DEL DISPOSITIVO enp1s0
+ip addr show enp1s0 
+
+# MUESTRA las estadisticas de esta red
+ip -s link show enp1s0 
+
+
+############################ COMPROBAR LA CONECTIVIDAD ########################################33
+
+# PROBAR SI HAY CONEXION A OTRO SERVIDOR O SI SE RESUELVA LOCALMENTE
+ping -c5 localhost
+ping -c5 10.0.0.90
+
+# PROBAR SI HAY CONEXION A OTRO SERVIDOR O SI SE RESUELVA LOCALMENTE CON ipv6
+ping6 c-5
+
+# CONEXION SSH MEDIANTE ipv6 (DEBES ESPECIFICAR LA INTERFAZ)
+ssh 2806:2f0:90c0:f4bd:42dc:ffb3:3524:1fe1%enp1s0
+
+#  NOMBRES CONOCIDOS DE PUERTOS ESTANDAR
+/etc/services
+
+# MOSTRAR ESTADISTICA DE SOCKET, PUERTO Y PROTOCOLO
+ss
+ss -u -t
+ss --help
+ss -ta
+netstat -ta 
+
+# MUESTRA EL DEFAULT ROUTE, A TRAVES DE QUE INTERFAZ, LA RED Y EL SOURCE  
+ip route
+
+# MOSTRAR LOS SALTOS DE RED Y SISYEMA REMOTO QUE NO PERNETEZCA A LA RED 
+tracepath google.com
+tracepath rhel8cliente2.labrhel.com
+
+# ESTADO DE LOS DISPOSITIVOS
+nmcli device status
+nmcli connection show 
+
+# AGREGAR UNA CONEXIÓN DE RED
+nmcli connection add con-name secundaria type ethernet ifname enp7s0
+nmcli connection disconnect enp7s0
+nmcli connection delete secundaria 
+nmcli connection add con-name secundaria type ethernet ifname enp7s0 ipv4.method manual ipv4.addresses 10.0.0.60 ipv4.gateway 10.0.0.1 ipv4.dns 8.8.8.8 
+nmcli connection modify secundaria conection.autoconnect yes
+nmcli connection reload
+
+# CONFIGURACIÓN MANUAL DE RED EN LOS ARCHIVOS (EJEMPLO)
+TYPE=Ethernet
+# PERSISTENTE A REINICIOS
+ONBOOT=yes
+# DIRECCION MANUAL
+BOOTPROTO=none
+# DISPOSITIVO 
+DEVICE=enp7s0
+NAME=enp7s0
+IPADDR1=10.0.0.82
+PREFIX=24
+GATEWAY=10.0.0.1
+DNS1=8.8.8.8
+
+
+
+############### CONFIGURACIÓN DE NOMBRES DE HOSTS Y RESOLUCIÓN DE NOMBRESº ##############################################
+hostname
+vim /etc/hostname
+hostnamectl status
+hostnamectl set-hostname NAME
+
+# ARCHIVO DONDE EL SERVIDOR REVISA PRIMERO PARA BUSCAR LA RESOLUCIÓN DE NOMBRES
+/etc/nsswitch.conf
+# 1.- /etc/host
+# 2.- /etc/resolv.conf
+# SOLO PUEDES PONER 3 DNS SERVER EN EL ARCHIVO 
+# NINGUNO DE ESTOS ARCHIVOS SE RECOMIENDA CONFIGURAR MANUALMENTE SIEMPRE ES ACONSEJABLE REALIZARLO CON EL COMANCO nmcli y hostnamectl set-hostname 
+
+(ENCUENTRA LOS NOMBRES CORTOS DE HOST)
+getent hosts NAMEHOST 
+
+hostname -s 
+hostname -f
+
+

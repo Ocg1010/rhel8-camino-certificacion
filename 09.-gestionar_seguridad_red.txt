@@ -1,0 +1,42 @@
+MUESTRA TODAS LAS ZONAS
+# firewall-cmd --list-all-zones
+
+MUESTRA LA ZONA QUE ESTA ACTIVA
+# firewall-cmd --list-all
+
+MUESTRA LA ZONA ASIGNADA POR DEFECTO
+# firewall-cmd --get-default-zone
+
+LISTAR UNA ZONA EN PARTICULAR
+# firewall-cmd --list-all --zone=dmz
+
+ARCHIVO PARA EDITAR REGLAS
+# vim /etc/firewalld
+
+CAMBIAR ZONA POR DEFECTO
+# firewall-cmd set-default-zone=work
+
+ELIMINAR SERVICIO 
+# firewall-cmd --permanent --remove-service=sshd
+
+AÑADIR SERVICIO
+# firewall-cmd --permanent --add-service=sshd
+
+RECARGAR SIEMPRE DESPUES DE EDITAR
+# firewall-cmd --reload
+
+MUESTRA TODAS LAS ZONAS PERO SIN LA DESCRIPCION
+# firewall-cmd --get-zones
+
+AÑADE UNA DIRECCION 
+firewall-cmd --add-source=192.168.0.4/24
+
+AÑADE UN PUERTO
+# firewall-cmd --add-port=12345/tcp --permanent
+
+RECOMENDACION ENMASCARAR SERVICIOS
+# systemctl mask nftables
+
+
+
+
