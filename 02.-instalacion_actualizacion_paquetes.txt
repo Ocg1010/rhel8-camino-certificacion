@@ -1,28 +1,29 @@
 ############################### REGISTRO DE SISTEMAS PARA SOPOPRTE REDHAT  ##############################################################
 
 # MOSTRAR AYUDA DEL COMANDO
-subscription manager --help
+subscription-manager --help
 
 # COMADNO INTERACTIVO PARA SUSCRIBIR EL SISTEMA 
-subscription manager register
+subscription-manager register
 
-# MUESTRA INFORMACIÓN SOBRE LAS SUSCRIPCIONES DE SOFWARE QUE ESTÁN ASOCIADAS CON EL SISTEMA OPERATIVO 
-subscription manager list
+# MUESTRA INFORMACIÓN SOBRE LAS SUSCRIPCIONES DE SOFTWARE QUE ESTÁN ASOCIADAS CON EL SISTEMA OPERATIVO 
+subscription-manager list
 
 # SUSCRIPCIONES DISPONIBLES
-subscription manager list --available
+subscription-manager list --available
 
 # ADJUNTA UNA SUSCRIPCIÓN ESPECIFICA AL SISTEMA
-subscription manager attach --pool=4356345673563456
+subscription-manager attach --pool=4356345673563456
 
 # MUESTRA TODOS LOS REPOSITORIOS QUE TENEMOS
 subscription-manager repos --list
 
-# MUESTRA LOS REPOSTORIOS QUE TENEMOS
+# MUESTRA LOS REPOSTORIOS QUE TENEMOS HABILITADOS Y DESHABILITADOS
 subscription-manager repos --list-enabled y subscription-manager repos --list-disabled
 
-# HABILITAR UN REPOSITORIO
+# HABILITAR UN REPOSITORIO Y DESHABILITAR UN REPOSITORIO 
 subscription-manager repos enable=rhel-8-for-x86_64-appsteam-source-rpms
+subscription-manager repos disable=rhel-8-for-x86_64-appsteam-source-rpms
 
 # LISTA DETALLADA DE LAS SUSCRIPCIONES DE SOFWARE QUE ESTAN ACTUALMENTE CONSUMIDAS POR EL SISTEMA 
 subscription-manager list --consumed
@@ -33,45 +34,47 @@ subscription-manager unregister
 2.- INSTALACIÓN Y ACTUALIZACIÓN DE PAQUETES SE SOFWARE  
 yum --help
 
+########################################### GESTOR DE PAQUETES ###################################################
+
 # MUESTRA EL PAQUETE SOLICITADO O SI HAY ACTUALIZACIONES DISPONIBLES 
 yum list PACKAGE
 
-# BUSCA PAQUETES SIMILARES A LO BUSCADO 
+# BUSCA PAQUETES O COINCIDENCIAS
 yum search PACKAGE
 yum search all PACKAGE
 yum search all 'web server'
 
-# Muestra informacion del paquete
+# MUESTRA INFORMACIÓN DEL PAQUETE 
 yum info PACKAGE 
 
-# Nos muestra que paquete provee el comando 'ss' 'netstat'
+# MUESTRA QUE PAQUETE PROVEE EL COMANDO 'ss' Y 'netstat' 
  yum provides ss
  yum provides netstat 
 
-# Que paquete prove un comando especifico 
+# QUE PAQUETE PROVE UN COMANDO ESPECIFICO  
 yum whatprovides netstat
 yum whatprovides */netstat
 
-3.- Instalando y eliminando grupos de software
-# Muestra los grupos  y los ocultos ocultos
+################################ INSTALANDO Y ELIMINANDO GRUPOS DE SOFTWARE ###################################3
+# MUESTRA GRUPOS Y GRUPOS OCULTOS
 yum group list 
 yum group listhidden
 
-# Muestra informacion del grupo
+# MUESTRA INFORMACIÓN DEL GRUPO
 yum group info 'GROUP'
 
-# Analizar historial de las transacciones
+# ANALIZAR HISTORIAL DE LAS INSTALACIONES O ACTUALIZACIONES
 yum history
 
-# Muestra informacion de la transaccion que elijas
+# MUESTRA INFORMACIÓN DEL PROCESO CON EL NUMERO ELEGIDO
 yum history info NUM
 
 # Revertir una transaccion completa
 yum history undo NUM
 
- 
-4.- Creando y habilitando repositorios de software 
-# /etc/yum.repos.d/repositorio.repos
+
+##########################  CREANDO Y HABILITANDO REPOSITORIOS DE SOFTWARE ############################################# 
+# /etc/yum.repos.d/repositorio.repo
 [base1]
 name = nombre aqui
 baseurl=http://rhel9master.lab.rhel.com/repos/rhel8/basweos
@@ -79,58 +82,58 @@ enabled=1
 gpgchek=1
 gpgkey=file:///etc/pki/rpm-gpg/NAME
 
-# Checar los repositorios disponibles
+# VER QUE REPOSITORIOS TENEMOS DISPONIBLES 
 yum repolist
 
-# Para agregar con un paquete (debemos tener la url del repositorio)
+# PARA AGREGAR CON UN PAQUETE (DEBEMOS TENER LA URL DEL REPOSTORIO) 
 yum intall dnf-utils
-yum-config-manager --add-repo=http://rhel9master.lab.rhel.com/repos/rhel8/basweos
+yum-config-manager --add-repo=http://rhel9master.lab.rhel.com/repos/rhel8/baseos
 yum-config-manager --enable base
 
-# Este comando utiliza el programa rsync para sincronizar los contenidos de un repositorio de paquetes RPM con la ruta /var/www/html/repos/ en tu sistema local. Aquí está desglosado:
+# ESTE COMANDO UTILIZA EL PAQUETE RSYNC PARA SINCRONIZAR LOS CONTENIDOS DE UN REPOSITORIO DE PAQUETES RPM CON LA RUTA /var/www/html/repos EN TU SISTEMA LOCAL. AQUI ESTA DESGLOZADO 
 rsync --repoid=rhel-8-for-x86-baseos-rpms -p /var/www/html/repos/ --downloadcomps --download-metadata
 
-# Ahi dice qie se mantienen 3 versiones del kernel y cuando supera ese numero remueve la mas antigua
+# RUTA DONDE SE GUARDAN LAS VERSIONES DEL KERNEL, SOLO SE GUARDAN 3 Y CUANDO SE SUPERA ESE NUMERO SE REMUEVE LA MAS ANTIGUA 
 /etc/yum.conf
 
-# Importar una llave
+# IMPORTAR UNA CLAVE
 rpm -- import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7Server
 
-# Buscar si se importo bien
+# VER SI LA CLAVE SE IMPORTO CON EXITO
 ls -las /etc/pki/rpm-gpg/RPM-GPG-KEY
 rpm -qa gpg-pubkey*
 rpm -qi NAMEKEY
 
-5.-  Gestionar modulos y habilitar flujos de modulos
-# Listar modulos
+############## GESTIONAR MODULOS Y HABILITAR FLUJOS DE MODULOS #################################################
+# LISTAR MODULOS
 yum module list
 
-# Listar flujos de modulos
+# LISTAR FLUJOS DE MODULOS 
 yum module list MODULE
 
-# Remover un modulo (elimina paquetes y dependencias)
+# REMOVER UN MODULO (ELIMINA PAQUETES Y DEPENDENCIAS) 
 yum module remove php
 
-# Deshabilitar modulos
+# DESHABILITAR MODULOS 
 yum module disable php
 
-# Habilitar modulos
+# HABILITAR MODULOS 
 yum module enable php
 
-6.- Modulo de conmutacion de flujos
-# Instalar modulo con version diferente
-Supongamos que tenemos instalado instalamos un modulo de paquete version 10
+############################# MODULO DE CONMUTACION DE FLUJOS ##########################################################
+# INSTALAR MODULO CON VERSION DIFERENTE 
+SUPONGAMOS QUE TENEMOS INSTALADO, INSTALAMOS UN MODULO DE PAQUETES VERSION 10 
 yum module install potsgresql
 yum module info potsgresql
-# Eliminamos el existente 
+# ELIMINAMOS EL PAQUETE EXISTENTE
 yum module remove potsgresql
-# Deshabilitar
+# LO DESHABILITAMOS
 yum module disable potsgresql
-# Instalar la version que queremos (en este caso 9.6)
+# INSTALAMOS LA VERSION QUE QUEREMOS EN ESTE CASO LA 9.6 
 yum module install potsgresql:9.6
-# Listar solo modulos instalados
+# LISTAR SOLO MODULOS INSTALADOS
 yum module list --install
-# Habilitar modulo con su perfil
+# HABILITAR MODULO CON SU PERFIL
 yum module enable python36:3.6/common
 yum module install python36:3.6/common
 (PROBAR CON IDM PACKAGE)

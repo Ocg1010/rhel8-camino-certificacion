@@ -1,64 +1,63 @@
-1.- Identificacion de procesos del sistema 
+###########################33 IDENTIFICACIÓN DE PROCESOS DEL SISTEMA ##################################################### 
 
-# Enumerar tipos de unidades (servicios)
+# ENUMERAR TIPOS DE UNIDADES (SERVICIOS) 
 systemctl list-units -t service
 
-# Lista todos los servicios
+# LISTAR TODOS LOS SERVICIOS
 systemctl list-units -t service --all
 
-# Enumeras tipos de unidad (path)
+# ENUMERAR TIPOS DE UNIDAD (PATH)
 systemctl list-units -t path
 
-# Enumeras tipos de unidad (socket)
+# ENUMERAR TIPO DE UNIDAD (SOCKET)
 systemctl list-unit-files -t socket
 
-# Unidades cargadas y acticas
+# UNIDADES CARGADAS Y ACTIVAS 
 systemctl
 
-# Muestra los servicios instalados y habilitados (sockets services, TODO)
+# MUESTRA LOS SERVICIOS INSTALADOS Y HABILITADOS (SOCKETS, SERVICES, Y MAS) 
 systemctl list-unit-files
 
-# Que archivos va a cargar o de que target depende o va a cargar
+# MUESTRA LOS ARCHIVOS QUE VA ACARGAR O DE QUE TARGET DEPENDE O VA A CARGAR 
 systemctl cat sshd.service
 
-# Lista de dependencias que depende bajo ese servicio
+# LISTAR LAS DEPENDENCIAS QUE HAY BAJO ESE SERVICIO 
 systemctl list-dependecies sshd
 
-2.- Enmascaramiento y desenmascaramiento
+2.- ENMASCARAMIENTO Y DESENMASCARAMIENTO 
 # Enmascaramiento (enlace a /dev/null, no se puede reiniciar ni iniciar)
 systemctl mask firewalld.serivce
 
-# Desenmascaramiento
+# DESENMASCARAMIENTO
 systemctl unmask firewalld.service
 
-3.- Seleccionando el objetivo (target) de arranque 
-# Mostrar todos los targets
+#################### SELECCIONANDO EL OBJETIVO (TARGET) DE ARRANQUE ########################################## 
+# MOSTRAR TODOS LOS TARGETS
 systemctl list-units --type target
-# Cambiar de un target a otro (cambia el target aislando)
+# CAMBIAR DE UN TARGET A OTRO (CAMBIA EL TARGET AISLADAMENTE) 
 systemctl isolate multi-user.target
-# Ver target por default
+# VER TARGET POR DEFAULT
 systemctl get-default 
-# Establecer target predeterminado
+# ESTABLECER TARGET PREDETERMINADO 
 systemctl set-default graphical.target
 
-4.- Seleccionar un target diferente en el arranque
+4.- SELECCIONAR UN TARGET DIFERENTE EN EL ARRANQUE 
 #  Quitar rhgb quiet (es opcional) systemd.unit=graphical.target (el target deseado en el ejemplo es graphical, estos cambios solo son temporales)
 
 
-5.- Restablecer la contraseña root
-# Pasos para restablecer la contraseña 
-1.- Agregar al final de la linea que empieza con linux "rd.break" "init=/bin/sh"
-2.- Verificar con el comando "mount" que no tenemos permisos para escribir en el sistema 
-3.- Montar el sistema de archivos como lectura y escritura con "mount -o remount,rw /sysroot
-Verificar con "mount" que ya tenga permisos de escritura (rw)
-4.- Entrar en un entorno chroot "chroot sysroot"
-5.- Cambiar la contraseña "passwd root" "echo 'holamundo' | passwd root --stdin"
-6.- Decirle a Selinux que haga un reetiquetado del sistema de archivos completo cuando inicie "touch /.autorelabel"
-7.- Procedes a salirte del sysroot 
+################################## RESTABLECER LA CONTRASEÑA ROOT ##################################################
+# PASOS PARA RESTABLECER LA CONTRASEÑA 
+1.- AGREGAR AL FINAL DE LA LÍNEA QUE MEPIEZA CON "LINUX" "rg.break" "init=/bin/sh"
+2.- VERIFICAMOS CON EL COMANDO "mount" QUE NO TENEMOS PERMISOS PARA ESCRIBIR EN EL SISTEMA  
+3.- MONTAR EL SISTEMA DE ARCHIVOS COMO LECTURA Y ESCRITURA CON "mount -o remount,rw /sysroot DESPUES VERIFICAMOS QUE YA CUENTE CON PERMISOS DE ESCRITURA mount -a 
+4.- ENTRAR EN UN RNTORTO chroot "chroot sysroot" 
+5.- CAMBIAR LA CONTRASEÑA "passwd root" OTRA MANERA PUEDE SER "echo 'holamundo' | passwd root --stdin" 
+6.- DECIRLE A SELINUX QUE HAGA UN REETIQUETADO DE SISTEMA DE ARCHIVOS COMPLETO CUANDO INICIE "touch /.autorelabel"
+7.- SALIRNOS DE SYSROOT 
 
 
-6.- Solucion de problemas del sistema de archivos en el arranque 
-# Verificar porque el problema en los logs
+###############3 SOLUCIÓN DE PROBLEMAS DEL SISTEMA DE ARCHIVOS EN EL ARRANQUE ####################################  
+# VERIFICAR PORQUE EL PROBEMA EN LOS LOGS 
 journalctl -xb
 
 
